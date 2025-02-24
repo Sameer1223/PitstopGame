@@ -9,7 +9,6 @@ public class CameraController : NetworkBehaviour
         cameraHolder = transform.GetChild(2).gameObject;
         if(IsOwner && IsClient)
         {
-            Debug.LogWarning("a");
             cameraHolder.SetActive(true);
         }
         base.OnNetworkSpawn();
