@@ -9,12 +9,6 @@ public class PlayerNetworkedController : NetworkBehaviour {
     private Vector2 moveInput;
     private Rigidbody rb;
 
-    // Variables for UI
-    private float currentSpeed = 0.0f;
-    private TMP_Text speedometerText;
-
-
-
     // Controller variables
     private float maxMovementSpeed = 15.0f;
     private float acceleration = 1000f;
@@ -23,7 +17,6 @@ public class PlayerNetworkedController : NetworkBehaviour {
     private void Awake() {
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
-        speedometerText = transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>();
     }
 
     public override void OnNetworkSpawn() {
@@ -38,13 +31,8 @@ public class PlayerNetworkedController : NetworkBehaviour {
         if (!IsOwner) return;
 
         MoveServerRpc(moveInput);
-        UpdateUI();
     }
 
-    private void UpdateUI() {
-        currentSpeed = rb.linearVelocity.magnitude * 2.237f;
-        speedometerText.text = currentSpeed.ToString("N0") + " mph";
-    }
     [ServerRpc]
     private void MoveServerRpc(Vector2 input) {
         MoveClientRpc(input);
