@@ -10,7 +10,7 @@ public class PlayerUI : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        speedometerText = transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>();
+        speedometerText = transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>();
     }
     private void UpdateUI() {
         currentSpeed = rb.linearVelocity.magnitude * 2.237f;
