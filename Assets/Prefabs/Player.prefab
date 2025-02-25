@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1795976121
+  GlobalObjectIdHash: 4193280572
   InScenePlacedSourceGlobalObjectIdHash: 4193280572
   DeferredDespawnTick: 0
   Ownership: 1
@@ -251,6 +251,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  FL: {fileID: 3950670072834275771}
+  FR: {fileID: 6067173253818983782}
+  carTuning:
+    maxMovementSpeed: 20
+    acceleration: 2000
+    tiltAngle: 60
+    minimumTurnSpeed: 1
+    wheelTurnSpeed: 7
+    drag: 0.98
+    downforce: 10
+    brakeForce: 1.5
 --- !u!54 &3489657001170142623
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -359,5 +370,15 @@ PrefabInstance:
 --- !u!4 &2799949766735295515 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 38196ea8515fec944bf5ba8bcfe94072, type: 3}
+  m_PrefabInstance: {fileID: 2400931004367541232}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3950670072834275771 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7529372644190115253, guid: 38196ea8515fec944bf5ba8bcfe94072, type: 3}
+  m_PrefabInstance: {fileID: 2400931004367541232}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6067173253818983782 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -764697234159880554, guid: 38196ea8515fec944bf5ba8bcfe94072, type: 3}
   m_PrefabInstance: {fileID: 2400931004367541232}
   m_PrefabAsset: {fileID: 0}
