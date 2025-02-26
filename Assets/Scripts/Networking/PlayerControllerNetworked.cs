@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using TMPro;
 using UnityEngine.InputSystem;
 
 public class PlayerNetworkedController : NetworkBehaviour {
