@@ -30,6 +30,9 @@ public class PlayerNetworkedController : NetworkBehaviour {
     private void Awake() {
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
+        rb.linearDamping = 0f;
+        rb.angularDamping = 0f;
+
     }
 
     public override void OnNetworkSpawn() {
@@ -60,6 +63,7 @@ public class PlayerNetworkedController : NetworkBehaviour {
     [ClientRpc]
     private void MoveClientRpc(Vector2 input) {
         ForwardAcceleration(input);
+        RollingResistance(input);
         Turning(input);
         Braking();
         DragAndDownforce();
@@ -73,31 +77,54 @@ public class PlayerNetworkedController : NetworkBehaviour {
         }
     }
 
-    private void Turning(Vector2 input) {
-        if (Mathf.Abs(input.x) > 0.1f && rb.linearVelocity.magnitude > carTuning.minimumTurnSpeed) {
-            //transform.Rotate(0, input.x * tiltAngle * Time.fixedDeltaTime, 0, Space.Self);
-            Quaternion rotation = Quaternion.Euler(Vector3.up * input.x * carTuning.tiltAngle * Time.fixedDeltaTime);
-            rb.MoveRotation(rb.rotation * rotation);
-
-            FL.localRotation = Quaternion.Lerp(FL.localRotation, Quaternion.Euler(0, input.y * input.x * 30, 0), 
-                                                carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
-            FR.localRotation = Quaternion.Lerp(FR.localRotation, Quaternion.Euler(0, input.y * input.x * 30, 0), 
-                                                carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
-        } else {
-            FL.localRotation = Quaternion.Lerp(FL.localRotation, Quaternion.identity, 
-                                                carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
-            FR.localRotation = Quaternion.Lerp(FR.localRotation, Quaternion.identity, 
-                                                carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
+    private void RollingResistance(Vector2 input) {
+        if (rb.linearVelocity.magnitude > 1f && Mathf.Abs(input.y) < 0.1f){
+            if (rb.linearVelocity.magnitude > 10f) return;
+            rb.sleepThreshold = 0f; 
+            
+            //float resistanceFactor = Mathf.Clamp(rb.linearVelocity.magnitude * 0.005f, 0.01f, 0.1f);
+            float resistanceFactor = Mathf.Lerp(0.001f, 0.1f, 1f - Mathf.Clamp01(rb.linearVelocity.magnitude / carTuning.maxMovementSpeed));
+            Vector3 resistanceForce = -rb.linearVelocity.normalized * resistanceFactor;
+            rb.AddForce(resistanceForce, ForceMode.Acceleration);
         }
     }
 
+    private void Turning(Vector2 input) {
+        if (Mathf.Abs(input.x) > 0.1f && rb.linearVelocity.magnitude > carTuning.minimumTurnSpeed) {
+            float reverseMultiplier = Vector3.Dot(rb.linearVelocity, transform.forward) < 0 ? -1f : 1f;
+
+            Quaternion rotation = Quaternion.Euler(Vector3.up * input.x * carTuning.tiltAngle * Time.fixedDeltaTime * reverseMultiplier);
+            rb.MoveRotation(rb.rotation * rotation);
+
+            RotateWheels(input);
+        } else {
+            ResetWheels();
+        }
+    }
+
+    
     private void Braking() {
-        //rb.linearDamping = isBraking? carTuning.brakeForce: 0.1f;
-        if (isBraking) rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, carTuning.brakeForce * Time.fixedDeltaTime);
+        rb.linearDamping = isBraking? carTuning.brakeForce: 0f;
+        /*if (isBraking) {
+            rb.linearDamping = Mathf.Lerp(rb.linearDamping, 10f, Time.fixedDeltaTime * 0.5f);
+        } else {
+            rb.linearDamping = 0.1f;
+        }*/
     }
 
     private void DragAndDownforce() {
         rb.AddForce(-transform.up * carTuning.downforce);
     }
 
+    private void RotateWheels(Vector2 input) {
+        FL.localRotation = Quaternion.Lerp(FL.localRotation, Quaternion.Euler(0, input.x * 30, 0), 
+                                            carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
+        FR.localRotation = Quaternion.Lerp(FR.localRotation, Quaternion.Euler(0, input.x * 30, 0), 
+                                            carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
+    }
+
+    private void ResetWheels() {
+        FL.localRotation = Quaternion.Lerp(FL.localRotation, Quaternion.identity, carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
+        FR.localRotation = Quaternion.Lerp(FR.localRotation, Quaternion.identity, carTuning.wheelTurnSpeed * Time.fixedDeltaTime);
+    }
 }

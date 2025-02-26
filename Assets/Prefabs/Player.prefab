@@ -254,13 +254,13 @@ MonoBehaviour:
   FL: {fileID: 3950670072834275771}
   FR: {fileID: 6067173253818983782}
   carTuning:
-    maxMovementSpeed: 20
+    maxMovementSpeed: 30
     acceleration: 2000
     tiltAngle: 60
-    minimumTurnSpeed: 1
+    minimumTurnSpeed: 0.1
     wheelTurnSpeed: 7
     drag: 0.98
-    downforce: 10
+    downforce: 700
     brakeForce: 1.5
 --- !u!54 &3489657001170142623
 Rigidbody:
@@ -270,9 +270,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1643351420949137732}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 1200
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
