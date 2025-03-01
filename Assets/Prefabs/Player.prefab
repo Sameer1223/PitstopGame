@@ -257,14 +257,14 @@ MonoBehaviour:
   FL: {fileID: 3950670072834275771}
   FR: {fileID: 6067173253818983782}
   carTuning:
-    maxMovementSpeed: 30
-    acceleration: 2000
+    maxMovementSpeed: 50
+    acceleration: 1000
     tiltAngle: 60
     minimumTurnSpeed: 0.1
     wheelTurnSpeed: 7
     drag: 0.98
-    downforce: 700
-    brakeForce: 1.5
+    downforce: 2000
+    brakeForce: 2500
 --- !u!54 &3489657001170142623
 Rigidbody:
   m_ObjectHideFlags: 0

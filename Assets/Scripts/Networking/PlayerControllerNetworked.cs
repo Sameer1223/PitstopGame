@@ -23,7 +23,8 @@ public class PlayerNetworkedController : NetworkBehaviour {
         public float wheelTurnSpeed = 3f;
         public float drag = 0.98f;
         public float downforce = 500f;
-        public float brakeForce = 3f;
+        public float brakeForce = 3000f;
+        public float gripMultiplier = 4f;
     }
     
     public CarTuning carTuning = new CarTuning();
@@ -68,25 +69,24 @@ public class PlayerNetworkedController : NetworkBehaviour {
         Turning(input);
         Braking();
         DragAndDownforce();
-        Debug.Log(rb.linearVelocity.magnitude);
     }
 
     private void ForwardAcceleration(Vector2 input) {
-        if (rb.linearVelocity.magnitude < carTuning.maxMovementSpeed){
-            Vector3 forwardSpeed = transform.forward * input.y * carTuning.acceleration * Time.fixedDeltaTime;
+        float speed = Vector3.Dot(rb.linearVelocity, transform.forward);
+        if (!isBraking && speed < carTuning.maxMovementSpeed){
+            float accelerationFactor = Mathf.Lerp(1f, 0.7f, (rb.linearVelocity.magnitude / carTuning.maxMovementSpeed) * 0.9f) * carTuning.acceleration;
+            
+            Vector3 forwardSpeed = transform.forward * input.y * accelerationFactor * Time.fixedDeltaTime;
             rb.AddForce(forwardSpeed, ForceMode.Acceleration);
         }
     }
 
     private void RollingResistance(Vector2 input) {
-        if (rb.linearVelocity.magnitude > 1f && Mathf.Abs(input.y) < 0.1f){
-            if (rb.linearVelocity.magnitude > 10f) return;
-            rb.sleepThreshold = 0f; 
+        if (!isBraking && rb.linearVelocity.magnitude > 1f && Mathf.Abs(input.y) < 0.1f){
             
-            //float resistanceFactor = Mathf.Clamp(rb.linearVelocity.magnitude * 0.005f, 0.01f, 0.1f);
-            float resistanceFactor = Mathf.Lerp(0.001f, 0.1f, 1f - Mathf.Clamp01(rb.linearVelocity.magnitude / carTuning.maxMovementSpeed));
+            float resistanceFactor = Mathf.Lerp(0.002f, 0.02f, Mathf.Log10(rb.linearVelocity.magnitude + 1) / Mathf.Log10(carTuning.maxMovementSpeed + 1));
             Vector3 resistanceForce = -rb.linearVelocity.normalized * resistanceFactor;
-            rb.AddForce(resistanceForce, ForceMode.Acceleration);
+            rb.AddForce(resistanceForce, ForceMode.Force);
         }
     }
 
@@ -105,16 +105,19 @@ public class PlayerNetworkedController : NetworkBehaviour {
 
     
     private void Braking() {
-        rb.linearDamping = isBraking? carTuning.brakeForce: 0f;
-        /*if (isBraking) {
-            rb.linearDamping = Mathf.Lerp(rb.linearDamping, 10f, Time.fixedDeltaTime * 0.5f);
-        } else {
-            rb.linearDamping = 0.1f;
-        }*/
+        if (isBraking) {
+            float brakeStrength = Mathf.Lerp(0.6f, 1f, 1 - (rb.linearVelocity.magnitude / carTuning.maxMovementSpeed));
+            
+            rb.AddForce(-transform.forward * carTuning.brakeForce * brakeStrength, ForceMode.Force);
+        }
     }
 
     private void DragAndDownforce() {
         rb.AddForce(-transform.up * carTuning.downforce);
+
+        Vector3 lateralVelocity = Vector3.Dot(rb.linearVelocity, transform.right) * transform.right;
+        Vector3 gripForce = -lateralVelocity * rb.mass * carTuning.gripMultiplier;
+        rb.AddForce(gripForce, ForceMode.Force);
     }
 
     private void RotateWheels(Vector2 input) {
