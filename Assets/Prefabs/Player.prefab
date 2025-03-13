@@ -102,7 +102,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2049677291548334447}
   - component: {fileID: 176730200802094892}
-  - component: {fileID: 8394097579076515837}
   - component: {fileID: 606971407932335146}
   - component: {fileID: 1284745055470519042}
   - component: {fileID: 1088682975866835317}
@@ -161,21 +160,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &8394097579076515837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1643351420949137732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 0}
 --- !u!114 &606971407932335146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,6 +311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c13debc1718782f448e25fce741408f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   speedometerText: {fileID: 5464094054546762534}
 --- !u!114 &7855572341339714249
 MonoBehaviour:
@@ -354,8 +339,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc1a6c4f0f862624fa3921903ec8fdad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lapCount: 1
-  checkpointIndex: -1
+  ShowTopMostFoldoutHeaderGroup: 1
+  lapCount:
+    m_InternalValue: 1
+  checkpointIndex:
+    m_InternalValue: -1
 --- !u!1 &4617765261145112955
 GameObject:
   m_ObjectHideFlags: 0

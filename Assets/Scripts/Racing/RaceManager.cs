@@ -1,27 +1,39 @@
+using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class RaceManager : MonoBehaviour
+namespace Racing
 {
-    private static RaceManager _instance;
+    public class RaceManager : NetworkBehaviour
+    {
+        public static RaceManager Instance { get; private set; }
 
-    public static RaceManager Instance { get { return _instance; }}
+        [SerializeField]
+        public GameObject[] checkpoints;
+        public List<Racer> racers = new();
+        public int totalLaps = 3;
 
-    [SerializeField]
-    public GameObject[] checkpoints;
-    public int totalLaps = 3;
-
-    // Singleton Pattern
-    private void Awake() {
-        if (_instance != null && _instance != this){
-            Destroy(this.gameObject);
-        } else {
-            _instance = this;
+        // Singleton Pattern
+        private void Awake() {
+            if (Instance != null && Instance != this){
+                Destroy(gameObject);
+            } else {
+                Instance = this;
+            }
         }
-    }
 
-    public void CheckPlayerFinished(RaceLogic player) {
-        if (player.lapCount > totalLaps) {
-            Debug.Log("Player finished!");
+        public void CheckPlayerFinished(Racer player) {
+            if (player.lapCount.Value > totalLaps) {
+                Debug.Log("Player finished!");
+                EndRaceServerRpc(player.gameObject.name);
+            }
+        }
+        
+        [ServerRpc]
+        private void EndRaceServerRpc(string winnerId)
+        {
+            Debug.Log($"Player {winnerId} wins! Ending race...");
+            //Time.timeScale = 0; // Stop the race
         }
     }
 }
