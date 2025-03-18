@@ -9,12 +9,21 @@ namespace Racing
         public NetworkVariable<int> lapCount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public NetworkVariable<int> checkpointIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private GameObject[] points;
+        private string playerName;
 
         private void Start()
         {
             if (!IsOwner) return;
             points = RaceManager.Instance.checkpoints;
-            RaceManager.Instance.racers.Add(this);
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+
+            if (!IsOwner) return;
+            playerName = "Player " + (RaceManager.Instance.Racers.Count + 1);
+            Debug.Log(playerName);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -29,7 +38,7 @@ namespace Racing
                 if (nextCheckpoint == points.Length - 1) lapCount.Value++;
                 checkpointIndex.Value = nextCheckpoint;
 
-                RaceManager.Instance.CheckPlayerFinished(this);
+                RaceManager.Instance.CheckPlayerFinished(this, playerName);
                 Debug.Log((lapCount.Value, checkpointIndex.Value));
             }
         }

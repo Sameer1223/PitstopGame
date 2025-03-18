@@ -3,12 +3,13 @@ using Unity.Netcode;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class PlayerNetworkedController : NetworkBehaviour {
+public class PlayerControllerNetworked: NetworkBehaviour {
 
     private InputSystem_Actions inputActions;
     private Vector2 moveInput;
     private bool isBraking;
     private Rigidbody rb;
+    private bool controlsEnabled = false;
 
     [SerializeField]
     Transform FL, FR;
@@ -34,7 +35,6 @@ public class PlayerNetworkedController : NetworkBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.linearDamping = 0f;
         rb.angularDamping = 0f;
-
     }
 
     public override void OnNetworkSpawn() {
@@ -52,10 +52,14 @@ public class PlayerNetworkedController : NetworkBehaviour {
     }
 
     private void FixedUpdate()  {
-        if (!IsOwner) return;
+        if (!IsOwner || !controlsEnabled) return;
 
         MoveServerRpc(moveInput);
     }
+    
+    public void EnableControls() { controlsEnabled = true; }
+
+    public void DisableControls() { controlsEnabled = false; }
 
     [ServerRpc]
     private void MoveServerRpc(Vector2 input) {
@@ -76,7 +80,7 @@ public class PlayerNetworkedController : NetworkBehaviour {
         if (!isBraking && speed < carTuning.maxMovementSpeed){
             float accelerationFactor = Mathf.Lerp(1f, 0.7f, (rb.linearVelocity.magnitude / carTuning.maxMovementSpeed) * 0.9f) * carTuning.acceleration;
             
-            Vector3 forwardSpeed = transform.forward * input.y * accelerationFactor * Time.fixedDeltaTime;
+            Vector3 forwardSpeed = transform.forward * (input.y * accelerationFactor * Time.fixedDeltaTime);
             rb.AddForce(forwardSpeed, ForceMode.Acceleration);
         }
     }
@@ -94,7 +98,7 @@ public class PlayerNetworkedController : NetworkBehaviour {
         if (Mathf.Abs(input.x) > 0.1f && rb.linearVelocity.magnitude > carTuning.minimumTurnSpeed) {
             float reverseMultiplier = Vector3.Dot(rb.linearVelocity, transform.forward) < 0 ? -1f : 1f;
 
-            Quaternion rotation = Quaternion.Euler(Vector3.up * input.x * carTuning.tiltAngle * Time.fixedDeltaTime * reverseMultiplier);
+            Quaternion rotation = Quaternion.Euler(Vector3.up * (input.x * carTuning.tiltAngle * Time.fixedDeltaTime * reverseMultiplier));
             rb.MoveRotation(rb.rotation * rotation);
 
             RotateWheels(input);
@@ -108,7 +112,7 @@ public class PlayerNetworkedController : NetworkBehaviour {
         if (isBraking) {
             float brakeStrength = Mathf.Lerp(0.6f, 1f, 1 - (rb.linearVelocity.magnitude / carTuning.maxMovementSpeed));
             
-            rb.AddForce(-transform.forward * carTuning.brakeForce * brakeStrength, ForceMode.Force);
+            rb.AddForce(-transform.forward * (carTuning.brakeForce * brakeStrength), ForceMode.Force);
         }
     }
 
@@ -116,7 +120,7 @@ public class PlayerNetworkedController : NetworkBehaviour {
         rb.AddForce(-transform.up * carTuning.downforce);
 
         Vector3 lateralVelocity = Vector3.Dot(rb.linearVelocity, transform.right) * transform.right;
-        Vector3 gripForce = -lateralVelocity * rb.mass * carTuning.gripMultiplier;
+        Vector3 gripForce = -lateralVelocity * (rb.mass * carTuning.gripMultiplier);
         rb.AddForce(gripForce, ForceMode.Force);
     }
 

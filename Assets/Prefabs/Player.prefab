@@ -344,6 +344,7 @@ MonoBehaviour:
     m_InternalValue: 1
   checkpointIndex:
     m_InternalValue: -1
+  playerPrefab: {fileID: 1643351420949137732}
 --- !u!1 &4617765261145112955
 GameObject:
   m_ObjectHideFlags: 0
