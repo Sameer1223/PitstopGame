@@ -38,7 +38,7 @@ public class RelayManager : MonoBehaviour
     {
         try
         {
-            var allocation = await RelayService.Instance.CreateAllocationAsync(1);
+            var allocation = await RelayService.Instance.CreateAllocationAsync(4);
             joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             
             NetworkManager.Singleton.StartHost();
@@ -50,16 +50,22 @@ public class RelayManager : MonoBehaviour
         }
     }
 
-    public async void StartClient(string joinCode)
+    public async void StartClient(string joinCode, System.Action<bool, string> callback)
     {
         try
         {
-            var allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-            NetworkManager.Singleton.StartClient();
+            Debug.Log("Attempting to join relay with code: " + joinCode);
+
+            // Attempt to join the relay session
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+
+            Debug.Log("Successfully joined relay.");
+            callback(true, null); // Success, no error message
         }
         catch (RelayServiceException e)
         {
-            Debug.LogError("Error starting client: " + e.Message);
+            Debug.LogError("Relay Join Failed: " + e.Message);
+            callback(false, e.Message); // Pass the error message to the UI
         }
     }
 }

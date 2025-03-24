@@ -1,4 +1,7 @@
+using System.Collections;
+using NUnit.Framework;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,11 +9,11 @@ namespace Networking
 {
     public class NetworkRelayButtons : MonoBehaviour
     {
-        [Header("UI Elements")]
-        public Button startHostButton;
+        [Header("UI Elements")] public Button startHostButton;
         public Button startClientButton;
         public TMP_Text statusText;
-    
+        public TMP_Text errorText;
+
         // Reference to the Input Field for the join code
         public TMP_InputField joinCodeInputField;
 
@@ -36,15 +39,15 @@ namespace Networking
 
         private void OnStartHostClicked()
         {
-            statusText.text = "Starting Host...";
+            statusText.SetText("Starting Host...");
 
             relayManager.StartHost(joinCode =>
             {
-                statusText.text = "Host started! Join code: " + joinCode;
+                statusText.SetText("Host started! Join code: " + joinCode);
                 Debug.Log("Relay Join Code: " + joinCode);
 
                 // After the host starts, you can update the input field or save the join code for later use.
-                joinCodeInputField.text = joinCode;  // Update the input field with the generated join code
+                joinCodeInputField.text = joinCode; // Update the input field with the generated join code
             });
         }
 
@@ -56,13 +59,22 @@ namespace Networking
             // Check if the join code is valid
             if (string.IsNullOrEmpty(joinCode))
             {
-                statusText.text = "Please enter a valid join code!";
+                statusText.SetText("Please enter a valid join code!");
                 return;
             }
 
             statusText.text = "Connecting to host...";
-            relayManager.StartClient(joinCode);
-            statusText.text = "Client started, connecting to host...";
+            relayManager.StartClient(joinCode, (success, errorMessage) =>
+            {
+                if (success)
+                {
+                    statusText.SetText("Client started, connecting to host...");
+                }
+                else
+                {
+                    errorText.SetText(errorMessage);
+                }
+            });
         }
     }
 }
