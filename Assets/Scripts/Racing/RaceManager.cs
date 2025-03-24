@@ -15,8 +15,10 @@ namespace Racing
         [SerializeField] public TextMeshProUGUI raceMessageText;
         public GameObject playerPrefab;
         public NetworkList<NetworkObjectReference> Racers = new NetworkList<NetworkObjectReference>();
-        public int totalLaps = 3;
+        [SerializeField] public int totalLapsValue = 3;
+        public NetworkVariable<int> totalLaps = new NetworkVariable<int>(0);
         private bool raceStarted = false;
+        private RaceTimer raceTimer;
 
         // Singleton Pattern
         private void Awake() {
@@ -30,6 +32,7 @@ namespace Racing
         private void Start()
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            raceTimer = GetComponent<RaceTimer>();
         }
         
         private void OnClientConnected(ulong clientId)
@@ -48,7 +51,7 @@ namespace Racing
         }
 
         public void CheckPlayerFinished(Racer player, string playerName) {
-            if (player.lapCount.Value > totalLaps) {
+            if (player.lapCount.Value > totalLaps.Value) {
                 EndRaceServerRpc(playerName);
             }
         }
@@ -56,6 +59,7 @@ namespace Racing
         [ServerRpc(RequireOwnership = false)]
         private void StartRaceServerRpc()
         {
+            totalLaps.Value = totalLapsValue;
             StartCoroutine(RaceCountdown());
         }
 
@@ -69,6 +73,7 @@ namespace Racing
 
             UpdateRaceMessageTextClientRpc("Go!");
             EnablePlayerInputClientRpc();
+            raceTimer.StartTimer();
             
             yield return new WaitForSeconds(1f);
             UpdateRaceMessageTextClientRpc("");
@@ -121,15 +126,18 @@ namespace Racing
 
         [ServerRpc(RequireOwnership = false)]
         private void EndRaceServerRpc(string playerName)
-        { 
-            EndRaceClientRpc(playerName);
+        {
+            raceStarted = false;
+            raceTimer.StopTimer();
+            string finalTime = raceTimer.GetFormattedTime();
+            EndRaceClientRpc(playerName, finalTime);
         }
 
         [ClientRpc]
-        private void EndRaceClientRpc(string playerName)
+        private void EndRaceClientRpc(string playerName, string finalTime)
         {
             if (raceMessageText == null) return;
-            UpdateRaceMessageTextClientRpc($"{playerName} has won!");
+            UpdateRaceMessageTextClientRpc($"{playerName} has won!\n Time: {finalTime}");
             Invoke(nameof(HideText), 5f);
         }
 
