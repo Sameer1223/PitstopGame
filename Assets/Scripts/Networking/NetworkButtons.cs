@@ -1,16 +1,19 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
 
 public class NetworkUIManager : MonoBehaviour {
-    public Button clientButton;
-    public Button hostButton;
-    public Button serverButton;
+    [Header("UI Elements")] 
+    public Button startHostButton;
+    public Button startClientButton;
+    public TMP_InputField joinCodeInputField;
+    public TMP_Text statusText;
+    private string joinCode;
 
     void Start() {
-        clientButton.onClick.AddListener(StartClient);
-        hostButton.onClick.AddListener(StartHost);
-        serverButton.onClick.AddListener(StartServer);
+        startClientButton.onClick.AddListener(StartClient);
+        startHostButton.onClick.AddListener(StartHost);
     }
 
     void StartClient() {
@@ -21,10 +24,5 @@ public class NetworkUIManager : MonoBehaviour {
     void StartHost() {
         Debug.Log("Starting Host...");
         NetworkManager.Singleton.StartHost();
-    }
-
-    void StartServer() {
-        Debug.Log("Starting Server...");
-        NetworkManager.Singleton.StartServer();
     }
 }

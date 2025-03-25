@@ -1,8 +1,9 @@
 using UnityEngine;
 using TMPro;
+using Unity.Netcode;
 
 
-public class PlayerUI : MonoBehaviour
+public class PlayerUI : NetworkBehaviour
 {
     private const float MAGNITUDE_TO_MPH = 2.237f;
     private const float MAGNITUDE_TO_KPH = 3.6f;
@@ -13,6 +14,7 @@ public class PlayerUI : MonoBehaviour
 
     private void Awake()
     {
+        if (!IsOwner) {speedometerText.text = "";}
         rb = GetComponent<Rigidbody>();
     }
     private void UpdateUI() {
@@ -22,6 +24,7 @@ public class PlayerUI : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if (!IsOwner) return;
         UpdateUI();
     }
 }
