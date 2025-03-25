@@ -344,7 +344,6 @@ MonoBehaviour:
     m_InternalValue: 1
   checkpointIndex:
     m_InternalValue: -1
-  playerPrefab: {fileID: 1643351420949137732}
 --- !u!1 &4617765261145112955
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,8 +552,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4294920646
+  m_fontColor: {r: 0.7759231, g: 0.28773582, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

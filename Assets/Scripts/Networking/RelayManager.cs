@@ -1,71 +1,110 @@
-using System.Collections;
+using TMPro;
 using Unity.Netcode;
-using Unity.Services.Core;
+using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
+using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class RelayManager : MonoBehaviour
+namespace Networking
 {
-    private string joinCode;
-
-    private async void Awake()
+    public class RelayManager : MonoBehaviour
     {
-        if (!UnityServices.State.Equals(ServicesInitializationState.Initialized))
+        [Header("UI Elements")]
+        public Button startHostButton;
+        public Button startClientButton;
+        public TMP_InputField joinCodeInputField;
+        public TMP_Text statusText;
+
+        private async void Start()
         {
+            if (!UnityServices.State.Equals(ServicesInitializationState.Initialized))
+            {
+                try
+                {
+                    await UnityServices.InitializeAsync();
+
+                    // Sign into Authentication Service
+                    if (!AuthenticationService.Instance.IsSignedIn)
+                    {
+                        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                        Debug.Log("Signed in anonymously!");
+                    }
+
+                    Debug.Log("Unity Services Initialized Successfully");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Failed to initialize Unity Services: " + e.Message);
+                }
+            }
+        
+            startHostButton.onClick.AddListener(OnStartHostClicked);
+            startClientButton.onClick.AddListener(OnStartClientClicked);
+        }
+
+        private async void OnStartHostClicked()
+        {
+            statusText.text = "Starting Host...";
             try
             {
-                await UnityServices.InitializeAsync();
+                Allocation allocation = await RelayService.Instance.CreateAllocationAsync(7);
+                string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+                Debug.Log("Join Code: " + joinCode);
+                joinCodeInputField.text = joinCode;
 
-                // Sign into Authentication Service
-                if (!AuthenticationService.Instance.IsSignedIn)
-                {
-                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                    Debug.Log("Signed in anonymously!");
-                }
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
+                    allocation.RelayServer.IpV4,
+                    (ushort) allocation.RelayServer.Port,
+                    allocation.AllocationIdBytes,
+                    allocation.Key,
+                    allocation.ConnectionData
+                );
 
-                Debug.Log("Unity Services Initialized Successfully");
+                NetworkManager.Singleton.StartHost();
+                statusText.text = "Host started! Share this code: " + joinCode;
             }
-            catch (System.Exception e)
+            catch (RelayServiceException e)
             {
-                Debug.LogError("Failed to initialize Unity Services: " + e.Message);
+                Debug.LogError(e);
+                statusText.text = "Error starting host: " + e.Message;
             }
         }
-    }
 
-    public async void StartHost(System.Action<string> onHostStarted)
-    {
-        try
+        private async void OnStartClientClicked()
         {
-            var allocation = await RelayService.Instance.CreateAllocationAsync(4);
-            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            
-            NetworkManager.Singleton.StartHost();
-            onHostStarted?.Invoke(joinCode);
-        }
-        catch (RelayServiceException e)
-        {
-            Debug.LogError("Error starting host: " + e.Message);
-        }
-    }
+            string joinCode = joinCodeInputField.text.Trim();
+        
+            if (string.IsNullOrEmpty(joinCode))
+            {
+                statusText.text = "Please enter a valid join code.";
+                return;
+            }
+        
+            statusText.text = "Joining Host...";
+            try
+            {
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-    public async void StartClient(string joinCode, System.Action<bool, string> callback)
-    {
-        try
-        {
-            Debug.Log("Attempting to join relay with code: " + joinCode);
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetClientRelayData(
+                    joinAllocation.RelayServer.IpV4,
+                    (ushort) joinAllocation.RelayServer.Port,
+                    joinAllocation.AllocationIdBytes,
+                    joinAllocation.Key,
+                    joinAllocation.ConnectionData,
+                    joinAllocation.HostConnectionData
+                );
 
-            // Attempt to join the relay session
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-
-            Debug.Log("Successfully joined relay.");
-            callback(true, null); // Success, no error message
-        }
-        catch (RelayServiceException e)
-        {
-            Debug.LogError("Relay Join Failed: " + e.Message);
-            callback(false, e.Message); // Pass the error message to the UI
+                NetworkManager.Singleton.StartClient();
+                statusText.text = "Client started, connecting to host...";
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogError(e);
+                statusText.text = "Error joining host: " + e.Message;
+            }
         }
     }
 }
