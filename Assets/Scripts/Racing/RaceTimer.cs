@@ -72,7 +72,7 @@ namespace Racing
 
         private void UpdateTimerDisplay(float time, TextMeshProUGUI displayText)
         {
-            if (displayText == null) return;
+            if (!displayText) return;
             int minutes = Mathf.FloorToInt(time / 60);
             int seconds = Mathf.FloorToInt(time % 60);
             int centiseconds = Mathf.FloorToInt((time * 100) % 100);
