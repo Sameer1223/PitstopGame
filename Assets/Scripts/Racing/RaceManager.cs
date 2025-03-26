@@ -92,7 +92,7 @@ namespace Racing
             if (spawnPoint == null) return;
             
             GameObject player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation); 
-            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            player.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
 
             NetworkObjectReference playerReference = new NetworkObjectReference(player.GetComponent<NetworkObject>());
             Racers.Add(playerReference);
