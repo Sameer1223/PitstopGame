@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 using TMPro;
+using Racing;
 
 public class UIFaceCamera : NetworkBehaviour
 {
@@ -10,7 +11,8 @@ public class UIFaceCamera : NetworkBehaviour
     [SerializeField]
     private TMP_Text ownNameTag;
 
-    private List<Transform> allNametags = new List<Transform>();
+
+    private static List<Transform> allNametags = new List<Transform>();
     public override void OnNetworkSpawn()
     {
         if(IsOwner)
@@ -25,16 +27,15 @@ public class UIFaceCamera : NetworkBehaviour
     }
     public void Update()
     {
-        OrientNametagClientRpc();
+        OrientNametag();
     }
-    [ClientRpc]
-    public void OrientNametagClientRpc()
+    public void OrientNametag()
     {
-        // Debug.Log("looking at: " + activeCam.name);
-        for(int i = 0; i < allNametags.Count; i++)
+        if(!IsOwner) return;
+        foreach(var nametag in allNametags)
         {
-            allNametags[i].LookAt(activeCam.transform); //looks at the camera but backwards
-            allNametags[i].RotateAround(allNametags[i].position, allNametags[i].up, 180f); //flip around correct orientation
+            nametag.LookAt(activeCam.transform); //looks at the camera but backwards
+            nametag.Rotate(0f, 180f, 0f); //flip around correct orientation
         }
     }
 }
