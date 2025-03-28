@@ -4,26 +4,46 @@ using System.Diagnostics;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
+using Debug = UnityEngine.Debug;
 
 namespace Racing
 {
     public class RaceTimer : NetworkBehaviour
     {
-        private Stopwatch stopwatch = new Stopwatch();
+        public static RaceTimer Instance { get; private set; }
+        
+        private Stopwatch raceStopwatch = new Stopwatch();
+        
         public NetworkVariable<float> raceTimer = new NetworkVariable<float>(0f);
-        public TextMeshProUGUI timerText;
-        private bool isRunning = false;
+        private float lapStartTime = 0f;
+        private bool isRunning;
+        
+        [Header("UI Components")]
+        [SerializeField] public TextMeshProUGUI raceTimerText;
+        [SerializeField] public TextMeshProUGUI lapTimerText;
 
+        // Singleton Pattern
+        private void Awake() {
+            if (Instance != null && Instance != this){
+                Destroy(gameObject);
+            } else {
+                Instance = this;
+            }
+        }
+        
         private void Update()
         {
-            if (isRunning && IsServer) raceTimer.Value = (float) stopwatch.Elapsed.TotalSeconds;
-            UpdateTimerDisplay(raceTimer.Value);
+            if (isRunning && IsServer) raceTimer.Value = (float)raceStopwatch.Elapsed.TotalSeconds;
+            
+            float currentLapTime = raceTimer.Value - lapStartTime;
+            UpdateTimerDisplay(raceTimer.Value, raceTimerText);
+            UpdateTimerDisplay(currentLapTime, lapTimerText);
         }
 
         public void StartTimer()
         {
             if (!IsServer) return;
-            stopwatch.Restart();
+            raceStopwatch.Restart();
             isRunning = true;
             StartCoroutine(SyncRaceTime());
         }
@@ -31,30 +51,37 @@ namespace Racing
         public void StopTimer()
         {
             if (!IsServer) return;
-            stopwatch.Stop();
+            raceStopwatch.Stop();
             isRunning = false;
+        }
+
+        public void RestartLapTimer()
+        {
+            if (!IsClient) return;
+            lapStartTime = raceTimer.Value;
         }
 
         private IEnumerator SyncRaceTime()
         {
             while (isRunning)
             {
-                raceTimer.Value = (float) stopwatch.Elapsed.TotalSeconds;
-                yield return new WaitForSecondsRealtime(0.1f);
+                raceTimer.Value = (float) raceStopwatch.Elapsed.TotalSeconds;
+                yield return new WaitForSecondsRealtime(0.5f);
             }
         }
 
-        private void UpdateTimerDisplay(float time)
+        private void UpdateTimerDisplay(float time, TextMeshProUGUI displayText)
         {
+            if (!displayText) return;
             int minutes = Mathf.FloorToInt(time / 60);
             int seconds = Mathf.FloorToInt(time % 60);
             int centiseconds = Mathf.FloorToInt((time * 100) % 100);
-            if (timerText != null) timerText.text = $"{minutes:00}:{seconds:00}:{centiseconds:00}";
+            displayText.text = $"{minutes:00}:{seconds:00}:{centiseconds:00}";
         }
 
         public string GetFormattedTime()
         {
-            float time = (float) stopwatch.Elapsed.TotalSeconds;
+            float time = (float) raceStopwatch.Elapsed.TotalSeconds;
             int minutes = Mathf.FloorToInt(time / 60);
             int seconds = Mathf.FloorToInt(time % 60);
             int centiseconds = Mathf.FloorToInt((time * 100) % 100);

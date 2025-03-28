@@ -35,7 +35,11 @@ namespace Racing
             
             var nextCheckpoint = (checkpointIndex.Value + 1) % points.Length;
             if (nextCheckpoint == idx) {
-                if (nextCheckpoint == points.Length - 1) lapCount.Value++;
+                if (nextCheckpoint == points.Length - 1)
+                {
+                    RaceTimer.Instance.RestartLapTimer();
+                    lapCount.Value++;
+                }
                 checkpointIndex.Value = nextCheckpoint;
 
                 RaceManager.Instance.CheckPlayerFinished(this, playerName);
