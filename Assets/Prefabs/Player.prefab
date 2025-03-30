@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_Actions: {fileID: 0}
   m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -347,7 +347,43 @@ MonoBehaviour:
     m_InternalValue: 1
   checkpointIndex:
     m_InternalValue: -1
-<<<<<<< Updated upstream
+  distToNextCheckpoint:
+    m_InternalValue: -1
+  playerName:
+    m_InternalValue:
+      utf8LengthInBytes: 0
+      bytes:
+        offset0000:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0016: 0
+        byte0017: 0
+        byte0018: 0
+        byte0019: 0
+        byte0020: 0
+        byte0021: 0
+        byte0022: 0
+        byte0023: 0
+        byte0024: 0
+        byte0025: 0
+        byte0026: 0
+        byte0027: 0
+        byte0028: 0
+        byte0029: 0
 --- !u!1 &2007954947357253280
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,10 +501,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   activeCam: {fileID: 7195222631288677353}
-  ownNameTag: {fileID: 6234685511716019351}
-=======
-  distToNextCheckpoint: 0
->>>>>>> Stashed changes
+  thisNameTag: {fileID: 6234685511716019351}
 --- !u!1 &3513763043912643570
 GameObject:
   m_ObjectHideFlags: 0
