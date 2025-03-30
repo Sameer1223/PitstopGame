@@ -3863,6 +3863,7 @@ GameObject:
   - component: {fileID: 1780919477}
   - component: {fileID: 1780919476}
   - component: {fileID: 1780919480}
+  - component: {fileID: 1780919481}
   m_Layer: 0
   m_Name: Race Manager
   m_TagString: Untagged
@@ -3923,6 +3924,7 @@ MonoBehaviour:
   - {fileID: 118309776}
   - {fileID: 85660866}
   raceMessageText: {fileID: 169204614}
+  livePosition: {fileID: 1780919481}
   playerPrefab: {fileID: 1643351420949137732, guid: 6ccb8acd8f169bc4595f500c00457475, type: 3}
   totalLapsValue: 2
   totalLaps:
@@ -3986,6 +3988,19 @@ MonoBehaviour:
     m_InternalValue: 0
   raceTimerText: {fileID: 1801318086}
   lapTimerText: {fileID: 1780136943}
+--- !u!114 &1780919481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1780919475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b8ac55761ee1a047b0efaa3e568a294, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1801318085
 GameObject:
   m_ObjectHideFlags: 0

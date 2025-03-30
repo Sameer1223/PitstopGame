@@ -8,6 +8,8 @@ namespace Racing
     {
         public NetworkVariable<int> lapCount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public NetworkVariable<int> checkpointIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> distToNextCheckpoint = new NetworkVariable<float>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        
         private GameObject[] points;
         private string playerName;
 
@@ -24,6 +26,13 @@ namespace Racing
             if (!IsOwner) return;
             playerName = "Player " + (RaceManager.Instance.Racers.Count + 1);
             Debug.Log(playerName);
+        }
+
+        private void Update()
+        {
+            if (!IsOwner) return;
+            var nextIndex = (checkpointIndex.Value + 1) % points.Length;
+            distToNextCheckpoint.Value = Vector3.Distance(transform.position, points[nextIndex].transform.position);
         }
 
         private void OnTriggerEnter(Collider other)
