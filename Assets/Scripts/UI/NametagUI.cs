@@ -5,15 +5,13 @@ using TMPro;
 using Racing;
 using Unity.Collections;
 
-public class UIFaceCamera : NetworkBehaviour
+public class NametagUI : NetworkBehaviour
 {
-    [SerializeField]
-    private Camera activeCam;
-    [SerializeField]
-    private TMP_Text thisNameTag;
-
-
+    [SerializeField] private Camera activeCam;
+    [SerializeField] private TMP_Text thisNameTag;
+    
     private static List<Transform> allNametags = new List<Transform>();
+    
     public void Start()
     {
         if(IsOwner)
@@ -35,11 +33,13 @@ public class UIFaceCamera : NetworkBehaviour
         Debug.Log("name changed: " + curr);
         thisNameTag.text = transform.parent.GetComponent<Racer>().playerName.Value.ToString();
     }
+    
     public void Update()
     {
         OrientNametag();
     }
-    public void OrientNametag()
+
+    private void OrientNametag()
     {
         if(!IsOwner) return;
         foreach(var nametag in allNametags)

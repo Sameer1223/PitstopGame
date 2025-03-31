@@ -41,18 +41,35 @@ public class LivePosition : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        liveRacePositions = liveRacePositions
-            .OrderByDescending(racer => racer.lapCount.Value)
-            .ThenByDescending(racer => racer.checkpointIndex.Value)
-            .ThenBy(racer => racer.distToNextCheckpoint.Value)
-            .ToList();
+        // liveRacePositions = liveRacePositions
+        //     .OrderByDescending(racer => racer.lapCount.Value)
+        //     .ThenByDescending(racer => racer.checkpointIndex.Value)
+        //     .ThenBy(racer => racer.distToNextCheckpoint.Value)
+        //     .ToList();
+        
+        liveRacePositions.Sort((a, b) =>
+        {
+            var lapCompare = b.lapCount.Value.CompareTo(a.lapCount.Value);
+            if (lapCompare != 0) return lapCompare;
+
+            var checkpointCompare = b.checkpointIndex.Value.CompareTo(a.checkpointIndex.Value);
+            return checkpointCompare != 0 ? checkpointCompare : a.distToNextCheckpoint.Value.CompareTo(b.distToNextCheckpoint.Value);
+        });
         
         
         NetworkObjectReference[] sortedRacerRefs = liveRacePositions
-            .Select(racer => (NetworkObjectReference)racer.GetComponent<NetworkObject>())
+            .Select(racer => (NetworkObjectReference)racer.NetworkObject)
             .ToArray();
-        
+
+        if (!HasRaceOrderChanged(sortedRacerRefs)) return;
         UpdateRacePositionClientRpc(sortedRacerRefs);
+    }
+    
+    private bool HasRaceOrderChanged(NetworkObjectReference[] newOrder)
+    {
+        if (liveRacePositions == null || liveRacePositions.Count != newOrder.Length) return true;
+
+        return newOrder.Where((t, i) => !t.Equals(liveRacePositions[i])).Any();
     }
 
     [ClientRpc]
