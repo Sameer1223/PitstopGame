@@ -14,6 +14,7 @@ namespace UI
         [Header("UI Components")]
         [SerializeField] private TMP_Text lapCountText;
         [SerializeField] private TMP_Text speedometerText;
+        [SerializeField] private TMP_Text racePositionText;
     
         private Rigidbody rb;
         private Racer racer;
@@ -60,6 +61,12 @@ namespace UI
             float speed = Vector3.Dot(rb.linearVelocity, transform.forward);
             currentSpeed = speed * MAGNITUDE_TO_KPH;
             speedometerText.text = currentSpeed.ToString("N0") + " kph";
+        }
+
+        public void UpdateRacePosition(string positionText)
+        {
+            if (!IsOwner) return;
+            racePositionText.text = positionText;
         }
     }
 }

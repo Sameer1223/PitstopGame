@@ -13,6 +13,8 @@ namespace Racing
 
         [SerializeField] public GameObject[] checkpoints;
         [SerializeField] public TextMeshProUGUI raceMessageText;
+        [SerializeField] public LivePosition livePosition;
+        
         public GameObject playerPrefab;
         public NetworkList<NetworkObjectReference> Racers = new NetworkList<NetworkObjectReference>();
         [SerializeField] public int totalLapsValue = 3;
@@ -73,6 +75,7 @@ namespace Racing
 
             UpdateRaceMessageTextClientRpc("Go!");
             EnablePlayerInputClientRpc();
+            livePosition.enabled = true;
             raceTimer.StartTimer();
             
             yield return new WaitForSeconds(1f);
