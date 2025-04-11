@@ -79,9 +79,9 @@ namespace Racing
             displayText.text = $"{minutes:00}:{seconds:00}:{centiseconds:00}";
         }
 
-        public string GetFormattedTime()
+        public string GetFormattedTime(int extraSeconds = 0)
         {
-            float time = (float) raceStopwatch.Elapsed.TotalSeconds;
+            float time = (float)(raceStopwatch.Elapsed.TotalSeconds + extraSeconds);
             int minutes = Mathf.FloorToInt(time / 60);
             int seconds = Mathf.FloorToInt(time % 60);
             int centiseconds = Mathf.FloorToInt((time * 100) % 100);

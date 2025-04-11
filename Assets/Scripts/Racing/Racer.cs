@@ -13,7 +13,9 @@ namespace Racing
         
         private GameObject[] points;
         public NetworkVariable<FixedString32Bytes> playerName = new NetworkVariable<FixedString32Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
+        public bool warningActive;
+        public int penaltySeconds;
+        
         private void Start()
         {
             if (!IsOwner) return;
@@ -39,23 +41,30 @@ namespace Racing
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!IsOwner || !other.CompareTag("Checkpoint")) return;
+            if (!IsOwner || (!other.CompareTag("Checkpoint") && !other.CompareTag("Corner"))) return;
             
             Checkpoint checkpoint = other.GetComponent<Checkpoint>();
             var idx = checkpoint.index;
             
             var nextCheckpoint = (checkpointIndex.Value + 1) % points.Length;
-            if (nextCheckpoint == idx) {
-                if (nextCheckpoint == points.Length - 1)
-                {
-                    RaceTimer.Instance.RestartLapTimer();
-                    lapCount.Value++;
-                }
-                checkpointIndex.Value = nextCheckpoint;
-
-                RaceManager.Instance.CheckPlayerFinished(this, playerName.Value.ToString());
-                Debug.Log((lapCount.Value, checkpointIndex.Value));
+            if (nextCheckpoint != idx) return;
+            
+            if (other.CompareTag("Corner"))
+            {
+                if (warningActive) penaltySeconds += 5;
+                warningActive = !warningActive;
+                Debug.Log("Warning! Penalty Seconds: " + penaltySeconds);
             }
+                
+            if (nextCheckpoint == points.Length - 1)
+            {
+                RaceTimer.Instance.RestartLapTimer();
+                lapCount.Value++;
+            }
+            checkpointIndex.Value = nextCheckpoint;
+
+            RaceManager.Instance.CheckPlayerFinished(this, playerName.Value.ToString(), penaltySeconds);
+            Debug.Log((lapCount.Value, checkpointIndex.Value));
         }
     }
 }

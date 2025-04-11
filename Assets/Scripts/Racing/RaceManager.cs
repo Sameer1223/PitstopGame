@@ -52,9 +52,9 @@ namespace Racing
             }
         }
 
-        public void CheckPlayerFinished(Racer player, string playerName) {
+        public void CheckPlayerFinished(Racer player, string playerName, int penaltySeconds) {
             if (player.lapCount.Value > totalLaps.Value) {
-                EndRaceServerRpc(playerName);
+                EndRaceServerRpc(playerName, penaltySeconds);
             }
         }
 
@@ -128,11 +128,11 @@ namespace Racing
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void EndRaceServerRpc(string playerName)
+        private void EndRaceServerRpc(string playerName, int penaltySeconds)
         {
             raceStarted = false;
             raceTimer.StopTimer();
-            string finalTime = raceTimer.GetFormattedTime();
+            string finalTime = raceTimer.GetFormattedTime(penaltySeconds);
             EndRaceClientRpc(playerName, finalTime);
         }
 

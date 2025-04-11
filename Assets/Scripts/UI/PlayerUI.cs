@@ -1,3 +1,4 @@
+using System;
 using Racing;
 using TMPro;
 using Unity.Netcode;
@@ -15,6 +16,8 @@ namespace UI
         [SerializeField] private TMP_Text lapCountText;
         [SerializeField] private TMP_Text speedometerText;
         [SerializeField] private TMP_Text racePositionText;
+        [SerializeField] private TMP_Text penaltyTimeText;
+        [SerializeField] private TMP_Text warningText;
     
         private Rigidbody rb;
         private Racer racer;
@@ -38,6 +41,7 @@ namespace UI
         
             lapCountText.text = $"Lap 1 / {RaceManager.Instance.totalLapsValue}";
             racer.lapCount.OnValueChanged += UpdateLapCountText;
+            penaltyTimeText.text = "";
         }
 
         private void FixedUpdate()
@@ -49,6 +53,7 @@ namespace UI
         {
             if (!IsOwner) return;
             UpdateSpeedometerText();
+            UpdatePenaltyTimeText();
         }
 
         private void UpdateLapCountText(int oldLapCount, int newLapCount)
@@ -61,6 +66,13 @@ namespace UI
             float speed = Vector3.Dot(rb.linearVelocity, transform.forward);
             currentSpeed = speed * MAGNITUDE_TO_KPH;
             speedometerText.text = currentSpeed.ToString("N0") + " kph";
+        }
+
+        private void UpdatePenaltyTimeText()
+        {
+            warningText.text = racer.warningActive ? "!" : "";;
+            //if (racer.penaltySeconds == 0) return;
+            penaltyTimeText.text = $"+{racer.penaltySeconds}s";
         }
 
         public void UpdateRacePosition(string positionText)
