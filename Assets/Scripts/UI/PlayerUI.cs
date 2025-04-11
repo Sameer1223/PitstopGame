@@ -28,6 +28,8 @@ namespace UI
             {
                 speedometerText.text = "";
                 lapCountText.text = "";
+                penaltyTimeText.text = "";
+                warningText.text = "";
             }
         
             rb = GetComponent<Rigidbody>();
@@ -71,7 +73,7 @@ namespace UI
         private void UpdatePenaltyTimeText()
         {
             warningText.text = racer.warningActive ? "!" : "";;
-            //if (racer.penaltySeconds == 0) return;
+            if (racer.penaltySeconds == 0) return;
             penaltyTimeText.text = $"+{racer.penaltySeconds}s";
         }
 
