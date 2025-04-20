@@ -16,14 +16,12 @@ public class NametagUI : NetworkBehaviour
     {
         if(IsOwner)
         {
-            Debug.Log("my name: " + transform.parent.GetComponent<Racer>().playerName.Value.ToString());
             thisNameTag.gameObject.SetActive(false);
         }
         else
         {
             allNametags.Add(transform);
             thisNameTag.text = transform.parent.GetComponent<Racer>().playerName.Value.ToString();
-            Debug.Log("from nametag: " + transform.parent.GetComponent<Racer>().playerName.Value.ToString());
             transform.parent.GetComponent<Racer>().playerName.OnValueChanged += OnNameChanged;
         }
         base.OnNetworkSpawn();
