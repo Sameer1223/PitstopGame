@@ -19,6 +19,7 @@ namespace UI
         [SerializeField] private TMP_Text backPositionText;
         [SerializeField] private TMP_Text firstPositionText;
         [SerializeField] private TMP_Text selfPositionText;
+        [SerializeField] private GameObject playerUIObject;
     
         private Rigidbody rb;
         private Racer racer;
@@ -37,6 +38,10 @@ namespace UI
 
         public override void OnNetworkSpawn()
         {
+            if(IsOwner && IsClient)
+            {
+                playerUIObject.SetActive(true);
+            }
             base.OnNetworkSpawn();
             if (!IsOwner) return;
         

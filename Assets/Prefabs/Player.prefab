@@ -392,6 +392,7 @@ MonoBehaviour:
   backPositionText: {fileID: 2169536868788352532}
   firstPositionText: {fileID: 7635516599957455781}
   selfPositionText: {fileID: 1011092591022042857}
+  playerUIObject: {fileID: 6132438955859910525}
 --- !u!114 &7855572341339714249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1467,7 +1468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8525521007704428520
 RectTransform:
   m_ObjectHideFlags: 0
