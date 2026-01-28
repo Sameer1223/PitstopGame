@@ -15,6 +15,11 @@ namespace UI
         [SerializeField] private TMP_Text lapCountText;
         [SerializeField] private TMP_Text speedometerText;
         [SerializeField] private TMP_Text racePositionText;
+        [SerializeField] private TMP_Text frontPositionText;
+        [SerializeField] private TMP_Text backPositionText;
+        [SerializeField] private TMP_Text firstPositionText;
+        [SerializeField] private TMP_Text selfPositionText;
+        [SerializeField] private GameObject playerUIObject;
     
         private Rigidbody rb;
         private Racer racer;
@@ -33,6 +38,10 @@ namespace UI
 
         public override void OnNetworkSpawn()
         {
+            if(IsOwner && IsClient)
+            {
+                playerUIObject.SetActive(true);
+            }
             base.OnNetworkSpawn();
             if (!IsOwner) return;
         
@@ -63,10 +72,37 @@ namespace UI
             speedometerText.text = currentSpeed.ToString("N0") + " kph";
         }
 
-        public void UpdateRacePosition(string positionText)
+        public void UpdateRacePosition(string positionText, string selfName)
         {
             if (!IsOwner) return;
             racePositionText.text = positionText;
+            selfPositionText.text = positionText + ") " + selfName;
+        }
+
+        public void UpdateFrontRacerName(string posNum, string posName)
+        {
+            if (!IsOwner) return;
+            frontPositionText.text = posNum + ") " + posName;
+        }
+        public void UpdateBackRacerName(string posNum, string posName)
+        {
+            if (!IsOwner) return;
+            backPositionText.text = posNum + ") " + posName;
+        }
+        public void UpdateFirstRacerName(string posName)
+        {
+            if (!IsOwner) return;
+            firstPositionText.text = "1st) " + posName;
+        }
+        public void ClearFrontRacerName()
+        {
+            if (!IsOwner) return;
+            frontPositionText.text = "";
+        }
+        public void ClearBackRacerName()
+        {
+            if (!IsOwner) return;
+            backPositionText.text = "";
         }
     }
 }

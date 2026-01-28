@@ -80,10 +80,36 @@ public class LivePosition : NetworkBehaviour
             if (racerRefs[i].TryGet(out NetworkObject racerObject))
             {
                 Racer racer = racerObject.GetComponent<Racer>();
-                if (racer != null)
+                if (racer == null) return;
+
+                string positionString = GetOrdinal(i + 1);
+                PlayerUI racerUIObject = racer.GetComponent<PlayerUI>();
+                racerUIObject.UpdateRacePosition(positionString, racer.GetComponent<Racer>().playerName.Value.ToString());
+            
+                if (racerRefs[0].TryGet(out NetworkObject firstRacerObject))
                 {
-                    string positionString = GetOrdinal(i + 1);
-                    racer.GetComponent<PlayerUI>().UpdateRacePosition(positionString);
+                    string firstRacerName = firstRacerObject.GetComponent<Racer>().playerName.Value.ToString();
+                    racerUIObject.UpdateFirstRacerName(firstRacerName);
+                }
+
+                if (i > 0 && racerRefs[i-1].TryGet(out NetworkObject frontRacerObject))
+                {
+                    string frontRacerName = frontRacerObject.GetComponent<Racer>().playerName.Value.ToString();
+                    racerUIObject.UpdateFrontRacerName(GetOrdinal(i-1 + 1), frontRacerName);
+                }
+                else if (i == 0)
+                {
+                    racerUIObject.ClearFrontRacerName();
+                }
+                
+                if (i < racerRefs.Length - 1 && racerRefs[i+1].TryGet(out NetworkObject backRacerObject))
+                {
+                    string backRacerName = backRacerObject.GetComponent<Racer>().playerName.Value.ToString();
+                    racerUIObject.UpdateBackRacerName(GetOrdinal(i+1 + 1), backRacerName);
+                }
+                else if (i == racerRefs.Length-1)
+                {
+                    racerUIObject.ClearBackRacerName();
                 }
             }
         }
