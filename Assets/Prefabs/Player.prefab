@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: -4998809826640853646}
   - component: {fileID: 7855572341339714249}
   - component: {fileID: 564160550791460503}
+  - component: {fileID: 5092456031207992002}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -242,16 +243,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   FL: {fileID: 3950670072834275771}
   FR: {fileID: 6067173253818983782}
-  carTuning:
-    maxMovementSpeed: 50
-    acceleration: 1000
-    tiltAngle: 60
-    minimumTurnSpeed: 0.1
-    wheelTurnSpeed: 7
-    drag: 0.98
-    downforce: 2000
-    brakeForce: 2500
-    gripMultiplier: 4
 --- !u!54 &3489657001170142623
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -388,6 +379,20 @@ MonoBehaviour:
         byte0029: 0
   warningActive: 0
   penaltySeconds: 0
+--- !u!114 &5092456031207992002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1643351420949137732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bae537e46449d2ab266621bfa96b66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  baseStats: {fileID: 11400000, guid: 41e59fec010c4d24984bdcd29b67b69a, type: 2}
 --- !u!1 &2007954947357253280
 GameObject:
   m_ObjectHideFlags: 0
